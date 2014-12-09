@@ -20,9 +20,10 @@ angular
     // CONFIGURE ANVIL CONNECT
     AnvilProvider.configure({
       issuer:       'http://localhost:3000',
-      client_id:    '58148b70-85aa-4726-af7d-42bd109dcc49',
-      redirect_uri: 'http://localhost:9000/callback.html',
-      display:      'popup',
+      client_id:    '7782bd1e-68f0-494e-b197-604b25a6aa8e',
+      //redirect_uri: 'http://localhost:9000/callback.html',
+      redirect_uri: 'http://localhost:9000/callback',
+      //display:      'popup',
       scope:        'realm'
     });
 
@@ -31,8 +32,29 @@ angular
 
     $routeProvider
       .when('/', {
-        templateUrl: 'views/main.html',
+        templateUrl: '/views/main.html',
         controller: 'MainCtrl'
+      })
+
+      .when('/requires/authentication', {
+        templateUrl: '/views/requiresAuthentication.html',
+        controller: 'RequiresAuthenticationCtrl',
+        resolve: {
+          session: AnvilProvider.requireAuthentication
+        }
+      })
+
+      .when('/requires/scope', {
+        templateUrl: '/views/requiresScope.html',
+        controller: 'RequiresScopeCtrl',
+        resolve: {
+          session: AnvilProvider.requireScope('realm', '/unauthorized')
+        }
+      })
+
+      .when('/unauthorized', {
+        templateUrl: '/views/unauthorized.html',
+        controller: 'UnauthorizedCtrl'
       })
 
       // HANDLE CALLBACK (REQUIRED BY FULL PAGE NAVIGATION ONLY)
@@ -43,7 +65,8 @@ angular
 
               // handle successful authorization
               function (response) {
-                $location.url('/');
+                $location.url(localStorage['anvil.connect.destination'] || '/');
+                delete localStorage['anvil.connect.destination']
               },
 
               // handle failed authorization
@@ -85,4 +108,18 @@ angular
 
   .controller('MainCtrl', function ($scope, Anvil) {
     // ...
-  });
+  })
+
+  .controller('RequiresAuthenticationCtrl', function ($scope, session) {
+    $scope.session = session;
+  })
+
+  .controller('RequiresScopeCtrl', function ($scope, session) {
+    $scope.session = session;
+  })
+
+  .controller('UnauthorizedCtrl', function ($scope) {
+    $scope.scope = '?';
+  })
+
+  ;
