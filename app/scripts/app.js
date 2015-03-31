@@ -21,9 +21,9 @@ angular
     AnvilProvider.configure({
       issuer:       'http://localhost:3000',
       client_id:    '7782bd1e-68f0-494e-b197-604b25a6aa8e',
-      //redirect_uri: 'http://localhost:9000/callback.html',
-      redirect_uri: 'http://localhost:9000/callback',
-      //display:      'popup',
+      redirect_uri: 'http://localhost:9000/callback.html',
+      //redirect_uri: 'http://localhost:9000/callback',
+      display:      'popup',
       scope:        'realm'
     });
 

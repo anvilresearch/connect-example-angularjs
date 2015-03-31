@@ -12,7 +12,8 @@
     "angular-animate": "1.2.16",
     "angular-touch": "1.2.16",
     "angular-route": "1.2.16",
-    "anvil-connect": "https://github.com/christiansmith/anvil-connect-js.git"
+    "anvil-connect": "https://github.com/christiansmith/anvil-connect-js.git",
+    "bcryptjs": "~2.1.0"
   },
   "appPath": "app"
 }

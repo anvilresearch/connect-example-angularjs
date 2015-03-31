@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <script src="/bower_components/bcryptjs/dist/bcrypt.js"></script>
+    <script src="/bower_components/sjcl/sjcl.js"></script>
+    <script>
+      var bcrypt = dcodeIO.bcrypt;
+
+      function deserialize () {
+        var re, secret, json, parsed;
+
+        try {
+          // Use the cookie value to decrypt the session in localStorage
+          re      = new RegExp('[; ]anvil.connect=([^\\s;]*)');
+          secret  = document.cookie.match(re).pop();
+          json    = sjcl.decrypt(secret, localStorage['anvil.connect']);
+          parsed  = JSON.parse(json);
+
+        } catch (e) {
+          console.log(e)
+          console.log('Cannot deserialize session data');
+        }
+
+        return parsed || {};
+      };
+
+
+      var session = deserialize();
+      var issuer = session.id_claims && session.id_claims.iss;
+      var client_id = session.id_claims && session.id_claims.aud;
+      var state = 'unchanged';
+      var message = client_id + ' ' + session.session_state;
+
+      function check_session() {
+        var targetOrigin = 'http://localhost:3000';
+        var w = window.parent.document.getElementById("op").contentWindow;
+        w.postMessage(message, targetOrigin);
+      }
+
+      function setTimer() {
+        check_session();
+        //timerId = setInterval("check_session()", 3000);
+        timerId = setTimeout("check_session()", 3000);
+      }
+
+      window.addEventListener("message", receiveMessage, false);
+
+      function receiveMessage(event) {
+        if (event.origin !== issuer) {
+          console.log('Houston, we have a problem', event.origin, issuer);
+          return;
+        }
+
+        if (event.data === 'unchanged') {
+          console.log('Still authenticated');
+        } else {
+          // this is where we do an auth request with prompt=none
+          console.log('Session invalidated');
+        }
+      }
+
+      setTimer()
+    </script>
+  </head>
+  <body></body>
+</html>
