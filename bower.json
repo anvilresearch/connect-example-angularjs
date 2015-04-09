@@ -13,7 +13,7 @@
     "angular-touch": "1.2.16",
     "angular-route": "1.2.16",
     "anvil-connect": "https://github.com/christiansmith/anvil-connect-js.git",
-    "bcryptjs": "~2.1.0"
+    "jquery": "~2.1.3"
   },
   "appPath": "app"
 }

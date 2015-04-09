@@ -1,62 +1,124 @@
 <html>
   <head>
-    <script src="/bower_components/bcryptjs/dist/bcrypt.js"></script>
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
     <script src="/bower_components/sjcl/sjcl.js"></script>
+
+    <script src="/bower_components/crypto-js/components/core.js"></script>
+    <script src="/bower_components/crypto-js/components/sha1.js"></script>
+    <script src="/bower_components/crypto-js/components/sha256.js"></script>
+    <script src="/bower_components/crypto-js/components/x64-core.js"></script>
+    <script src="/bower_components/crypto-js/components/sha512.js"></script>
+
+    <script src="/bower_components/jsrsasign/ext/base64.js"></script>
+    <script src="/bower_components/jsrsasign/ext/jsbn.js"></script>
+    <script src="/bower_components/jsrsasign/ext/jsbn2.js"></script>
+    <script src="/bower_components/jsrsasign/ext/rsa.js"></script>
+    <script src="/bower_components/jsrsasign/ext/rsa2.js"></script>
+    <script src="/bower_components/jsrsasign/rsapem-1.1.js"></script>
+    <script src="/bower_components/jsrsasign/rsasign-1.2.min.js"></script>
+    <script src="/bower_components/jsrsasign/asn1hex-1.1.js"></script>
+    <!--<script src="/bower_components/jsrsasign/x509-1.1.js"></script>-->
+    <script src="/bower_components/jsrsasign/crypto-1.1.js"></script>
+    <script src="/bower_components/jsrsasign/base64x-1.1.js"></script>
+    <script src="/bower_components/jsrsasign/keyutil-1.0.js"></script>
+
+    <script src="/bower_components/jsjws/ext/json-sans-eval.js"></script>
+    <script src="/bower_components/jsjws/jws-2.0.js"></script>
+
+    <script src="/bower_components/anvil-connect/anvil-connect.js"></script>
     <script>
-      var bcrypt = dcodeIO.bcrypt;
+      Anvil.configure({
+        issuer:       'http://localhost:3000',
+        client_id:    '7782bd1e-68f0-494e-b197-604b25a6aa8e',
+        redirect_uri: 'http://localhost:9000/rp.html',
+        display:      'page',
+        scope:        'realm'
+      });
 
-      function deserialize () {
-        var re, secret, json, parsed;
 
-        try {
-          // Use the cookie value to decrypt the session in localStorage
-          re      = new RegExp('[; ]anvil.connect=([^\\s;]*)');
-          secret  = document.cookie.match(re).pop();
-          json    = sjcl.decrypt(secret, localStorage['anvil.connect']);
-          parsed  = JSON.parse(json);
 
-        } catch (e) {
-          console.log(e)
-          console.log('Cannot deserialize session data');
+      var response = (location.hash) ? Anvil.parseFormUrlEncoded(location.hash.substring(1)) : {};
+      reauthenticate((response.error) ? false : true);
+
+      if (location.hash) {
+        Anvil.getKeys().then(function (keys) {
+
+          function success (session) {
+            console.log('RP CALLBACK SUCCESS', session);
+          }
+
+          function failure (fault) {
+            console.log('RP CALLBACK FAILURE', fault);
+          }
+
+          Anvil.callback(response).then(success, failure)
+        })
+      }
+
+
+
+      // start checking the session every 3 seconds
+      function setTimer() {
+        Anvil.checkSession('op');
+        //timerId = setTimeout("Anvil.checkSession('op')", 3000);
+        timerId = setInterval("Anvil.checkSession('op')", 3000);
+      }
+
+
+
+      function reauthenticate (value) {
+        var key = 'anvil.connect.reauthenticate';
+
+        // set the value
+        if (value !== undefined) {
+          localStorage[key] = (value === true) ? true : false;
         }
 
-        return parsed || {};
-      };
-
-
-      var session = deserialize();
-      var issuer = session.id_claims && session.id_claims.iss;
-      var client_id = session.id_claims && session.id_claims.aud;
-      var state = 'unchanged';
-      var message = client_id + ' ' + session.session_state;
-
-      function check_session() {
-        var targetOrigin = 'http://localhost:3000';
-        var w = window.parent.document.getElementById("op").contentWindow;
-        w.postMessage(message, targetOrigin);
+        // get the value
+        else {
+          return (localStorage[key] === 'true') ? true : false;
+        }
       }
 
-      function setTimer() {
-        check_session();
-        //timerId = setInterval("check_session()", 3000);
-        timerId = setTimeout("check_session()", 3000);
-      }
 
-      window.addEventListener("message", receiveMessage, false);
 
+      // listen for changes to OP browser state
       function receiveMessage(event) {
-        if (event.origin !== issuer) {
-          console.log('Houston, we have a problem', event.origin, issuer);
+        if (event.origin !== Anvil.issuer) {
+          console.log('Houston, we have a problem', event.origin, Anvil.issuer);
           return;
         }
 
+        // SESSION STATE IS THE SAME
         if (event.data === 'unchanged') {
-          console.log('Still authenticated');
-        } else {
-          // this is where we do an auth request with prompt=none
-          console.log('Session invalidated');
+          console.log('unchanged');
+        }
+
+        // SESSION STATE HAS CHANGED
+        else {
+          // Try to reauthenticate
+          if (reauthenticate()) {
+
+            // Mark that we've tried
+            reauthenticate(false);
+
+            var uri = Anvil.uri('authorize', {
+              prompt: 'none',
+              id_token_hint: Anvil.session.id_token
+            });
+
+            console.log('RP REAUTHENTICATING', uri)
+            window.location = uri;
+          }
+
+          // Unless it's already been done
+          else {
+            console.log('RP NOT REAUTHENTICATING')
+          }
         }
       }
+
+      window.addEventListener("message", receiveMessage, false);
 
       setTimer()
     </script>

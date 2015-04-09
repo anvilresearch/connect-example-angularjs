@@ -21,9 +21,9 @@ angular
     AnvilProvider.configure({
       issuer:       'http://localhost:3000',
       client_id:    '7782bd1e-68f0-494e-b197-604b25a6aa8e',
-      redirect_uri: 'http://localhost:9000/callback.html',
-      //redirect_uri: 'http://localhost:9000/callback',
-      display:      'popup',
+      //redirect_uri: 'http://localhost:9000/callback.html',
+      redirect_uri: 'http://localhost:9000/callback',
+      //display:      'popup',
       scope:        'realm'
     });
 
@@ -61,20 +61,25 @@ angular
       .when('/callback', {
         resolve: {
           session: function ($location, Anvil) {
-            Anvil.authorize().then(
+            if ($location.hash()) {
+              Anvil.authorize().then(
 
-              // handle successful authorization
-              function (response) {
-                $location.url(localStorage['anvil.connect.destination'] || '/');
-                delete localStorage['anvil.connect.destination']
-              },
+                // handle successful authorization
+                function (response) {
+                  $location.url(localStorage['anvil.connect.destination'] || '/');
+                  delete localStorage['anvil.connect.destination']
+                },
 
-              // handle failed authorization
-              function (fault) {
-                // ...
-              }
+                // handle failed authorization
+                function (fault) {
+                  // ...
+                }
 
-            );
+              );
+            } else {
+              $location.url(localStorage['anvil.connect.destination'] || '/');
+              delete localStorage['anvil.connect.destination']
+            }
           }
         }
       })
@@ -97,10 +102,10 @@ angular
     };
 
     $scope.signout = function () {
-      Anvil.signout();
+      Anvil.signout('/');
     };
 
-    $scope.$watchCollection(function () { return Anvil.session }, function (newVal) {
+    $scope.$watch(function () { return Anvil.session }, function (newVal) {
       $scope.session = newVal;
     });
 
