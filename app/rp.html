@@ -27,6 +27,7 @@
 
     <script src="/bower_components/anvil-connect/anvil-connect.js"></script>
     <script>
+
       Anvil.configure({
         issuer:       'http://localhost:3000',
         client_id:    '7782bd1e-68f0-494e-b197-604b25a6aa8e',
@@ -35,16 +36,15 @@
         scope:        'realm'
       });
 
-
+      Anvil.deserialize();
 
       var response = (location.hash) ? Anvil.parseFormUrlEncoded(location.hash.substring(1)) : {};
-      reauthenticate((response.error) ? false : true);
 
       if (location.hash) {
         Anvil.getKeys().then(function (keys) {
 
           function success (session) {
-            console.log('RP CALLBACK SUCCESS', session);
+            console.log('RP CALLBACK SUCCESS', session, Anvil.sessionState);
           }
 
           function failure (fault) {
@@ -59,25 +59,7 @@
 
       // start checking the session every 3 seconds
       function setTimer() {
-        Anvil.checkSession('op');
-        //timerId = setTimeout("Anvil.checkSession('op')", 3000);
-        timerId = setInterval("Anvil.checkSession('op')", 3000);
-      }
-
-
-
-      function reauthenticate (value) {
-        var key = 'anvil.connect.reauthenticate';
-
-        // set the value
-        if (value !== undefined) {
-          localStorage[key] = (value === true) ? true : false;
-        }
-
-        // get the value
-        else {
-          return (localStorage[key] === 'true') ? true : false;
-        }
+        var timer = setInterval("Anvil.checkSession('op')", 2000);
       }
 
 
@@ -89,6 +71,10 @@
           return;
         }
 
+        if (event.data === 'error') {
+          console.log('ERROR FROM OP', event.data);
+        }
+
         // SESSION STATE IS THE SAME
         if (event.data === 'unchanged') {
           console.log('unchanged');
@@ -96,31 +82,20 @@
 
         // SESSION STATE HAS CHANGED
         else {
-          // Try to reauthenticate
-          if (reauthenticate()) {
+          var uri = Anvil.uri('authorize', {
+            prompt: 'none',
+            id_token_hint: Anvil.session.id_token
+          });
 
-            // Mark that we've tried
-            reauthenticate(false);
-
-            var uri = Anvil.uri('authorize', {
-              prompt: 'none',
-              id_token_hint: Anvil.session.id_token
-            });
-
-            console.log('RP REAUTHENTICATING', uri)
-            window.location = uri;
-          }
-
-          // Unless it's already been done
-          else {
-            console.log('RP NOT REAUTHENTICATING')
-          }
+          //console.log('RP REAUTHENTICATING', uri)
+          window.location = uri;
         }
       }
 
       window.addEventListener("message", receiveMessage, false);
 
       setTimer()
+
     </script>
   </head>
   <body></body>
