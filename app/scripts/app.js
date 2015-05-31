@@ -20,7 +20,7 @@ angular
     // CONFIGURE ANVIL CONNECT
     AnvilProvider.configure({
       issuer:       'http://localhost:3000',
-      client_id:    '7782bd1e-68f0-494e-b197-604b25a6aa8e',
+      client_id:    'd5b2a5a4-e990-46f5-b2e4-3f538024b442',
       //redirect_uri: 'http://localhost:9000/callback.html',
       redirect_uri: 'http://localhost:9000/callback',
       //display:      'popup',
