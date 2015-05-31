@@ -4,9 +4,10 @@ client_id=$1
 host=$2
 port=$3
 
-if [ "$#" -eq 2 ]; then
+if [ "$#" -eq 3 ]; then
   sed s,CLIENT_ID,$client_id,g -i app/rp.html app/scripts/app.js
-  sed s,APP_URL,$host:$port,g -i app/rp.html app/scripts/app.js
+  sed s,APP_URL,$host,g -i app/rp.html app/scripts/app.js
+  sed s,APP_PORT,$port,g -i app/rp.html app/scripts/app.js
   sed s,APP_URL,$host,g -i Gruntfile.js
   sed s,APP_PORT,$port,g -i Gruntfile.js
 else

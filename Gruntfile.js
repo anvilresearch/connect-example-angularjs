@@ -46,9 +46,9 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: APP_PORT,
+        port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'APP_URL',
+        hostname: 'http://app1.sanguinebio.com',
         livereload: 35729
       },
       livereload: {
