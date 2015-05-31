@@ -22,7 +22,7 @@ angular
       issuer:       'http://localhost:3000',
       client_id:    'CLIENT_ID',
       //redirect_uri: 'http://localhost:9000/callback.html',
-      redirect_uri: 'HOST/callback',
+      redirect_uri: 'HOST_URL/callback',
       //display:      'popup',
       scope:        'realm'
     });
