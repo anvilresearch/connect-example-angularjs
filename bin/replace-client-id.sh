@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 if [ "$#" -eq 2 ]; then
   sed s,CLIENT_ID,$1,g -i app/rp.html app/scripts/app.js
   sed s,HOST_URL,$2,g -i app/rp.html app/scripts/app.js
