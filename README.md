@@ -9,5 +9,5 @@ This repository demonstrates authenticating users of an AngularJS app using Anvi
 
     docker-compose build
     docker-compose up
-    docker-compose run --service-ports app
-
+    docker-compose run --service-ports app sh
+    grunt serve
