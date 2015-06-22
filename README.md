@@ -7,6 +7,7 @@ This repository demonstrates authenticating users of an AngularJS app using Anvi
 
 ## Run with Docker
 
+    bin/replace-client-id.sh 060f4284-5e43-4ef1-874a-7d84143b8636 laptop-connect.anvil.io 80
     docker-compose build
     docker-compose up
     docker-compose run --service-ports app sh
