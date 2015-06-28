@@ -1,8 +1,7 @@
-app:
+angular:
   build: .
   ports:
-   - "9000:9000"
-   - "35729:35729"
+    - "9000:80"
   volumes:
-   - .:/src
-  command: "grunt serve"
+    - ./app:/usr/share/nginx/html
+  restart: always
