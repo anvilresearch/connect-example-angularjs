@@ -5,7 +5,7 @@ host=$2
 port=$3
 server_host=$4
 
-if [ "$#" -eq 3 ]; then
+if [ "$#" -eq 4 ]; then
   sed s,CLIENT_ID,"$client_id",g -i app/rp.html app/scripts/app.js
   sed s,APP_HOST,"$host",g -i app/rp.html app/scripts/app.js
   sed s,APP_PORT,"$port",g -i app/rp.html app/scripts/app.js
