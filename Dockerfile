@@ -1,7 +1,12 @@
-FROM mhart/alpine-iojs:2.1.0
-RUN apk add --update git && rm -rf /var/cache/apk/*
-WORKDIR /src
-COPY . /src
-RUN npm install
-RUN npm install -g grunt-cli bower
-RUN bower install --allow-root
+FROM alpine:3.2
+RUN apk add --update nginx && rm -rf /var/cache/apk/*
+RUN mkdir -p /tmp/nginx/client-body
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+#COPY ssl/nginx.crt /etc/nginx/ssl/nginx.crt
+#COPY ssl/nginx.key /etc/nginx/ssl/nginx.key
+#COPY app /usr/share/nginx/html/
+
+CMD ["nginx", "-g", "daemon off;"]

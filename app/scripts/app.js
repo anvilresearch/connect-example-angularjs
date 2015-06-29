@@ -19,7 +19,7 @@ angular
 
     // CONFIGURE ANVIL CONNECT
     AnvilProvider.configure({
-      issuer:       'http://localhost:3000',
+      issuer:       'SERVER_HOST',
       client_id:    'CLIENT_ID',
       //redirect_uri: 'http://localhost:9000/callback.html',
       redirect_uri: 'https://APP_HOST:APP_PORT/callback',
