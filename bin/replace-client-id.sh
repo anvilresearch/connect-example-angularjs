@@ -1,9 +1,13 @@
 #!/bin/bash
 
+echo This is no longer working. Use grunt instead. See README.md
+exit
+
 client_id=$1
-host=$2
-port=$3
-server_host=$4
+proto=$2
+host=$3
+port=$4
+server_host=$5
 
 # sed with in place editing is not portable between OSX and Linux (see http://stackoverflow.com/questions/5694228/sed-in-place-flag-that-works-both-on-mac-bsd-and-linux)
 # Changing a file, see pitfall http://mywiki.wooledge.org/BashPitfalls#cat_file_.7C_sed_s.2Ffoo.2Fbar.2F_.3E_file and
@@ -15,6 +19,11 @@ sponge() {
     lines+=( "$line" )
   done
   printf '%s\n' "${lines[@]}" > "$file"
+}
+
+sed_app() {
+  local file=$1
+  sed s,APP_PROTO,"$proto",g "$file" | sed s,APP_HOST,"$host",g | sed s,APP_HOST,"$host",g
 }
 
 

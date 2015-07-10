@@ -27,11 +27,20 @@ depending on whether boot2docker is involved or not. Also there can be
 differences on how the authentication is displayed, for example using a popup or
 a new page.
 
-Use one of these as a starting point and copy them to `authconf.json`:
+Use one of these as a starting point and copy them to `authconf.json`. For
+example when using docker via boot2docker the following is a good starting
+point:
 
 ```console
 cp authconf.dev.b2d.json authconf.json
 ```
+If you do not use boot2docker, for example if you want to serve directly
+via `grunt serve` then use:
+
+```console
+cp authconf.dev.localhost.json authconf.json
+```
+
 
 The Anvil Authentication server recognizes clients by an id which is generated
 when they are registered. Therefore the starting point is not yet final as the
@@ -71,6 +80,63 @@ Define CLIENT_ID as follows in authconf.json:
 
 The id shown will be unique to your authentication server. Replace the existing
 `CLIENT_ID` in `authconf.json` with the one you see in your output.
+
+## Run with angular app served by grunt serve
+
+In this scenaria we are using a simple build server via grunt.
+
+```console
+igelmac:connect-example-angularjs dev$ grunt serve
+Using authconf.json
+
+Running "serve" task
+
+Running "clean:server" (clean) task
+Cleaning .tmp...OK
+Cleaning dist...OK
+
+Running "concurrent:server" (concurrent) task
+
+    Using authconf.json
+
+    Running "copy:styles" (copy) task
+    Copied 1 files
+
+    Done, without errors.
+
+
+    Execution Time (2015-07-10 19:49:12 UTC)
+    loading tasks  20ms  ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 31%
+    copy:styles    41ms  ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 63%
+    Total 65ms
+
+    Using authconf.json
+
+    Running "copy:dist" (copy) task
+    Created 5 directories, copied 10 files
+
+    Done, without errors.
+
+
+    Execution Time (2015-07-10 19:49:12 UTC)
+    loading tasks   18ms  ▇▇▇▇▇ 9%
+    copy:dist      183ms  ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 91%
+    Total 202ms
+
+Running "connect:livereload" (connect) task
+Started connect web server on http://localhost:9000
+
+Running "watch" task
+Waiting...
+```
+
+As a result the browser should open the home page like this:
+
+![Angular example index page](png/home_page_localhost.png)
+
+When changes are made to the app this should readily refresh the browser.
+
+These pages should look the same as in the docker use case which shows some more pages except that these are running under `http://localhost:9000` instead of `http://boot2docker:9000`.
 
 ## Run with angular app served by docker
 
