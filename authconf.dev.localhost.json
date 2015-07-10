@@ -1,0 +1,10 @@
+{
+  "CLIENT_ID" : "3989647d-5ac7-4351-92b1-69f8164b7555",
+  "APP_PROTO": "http",
+  "APP_HOST": "localhost",
+  "APP_PORT": "9000",
+  "APP_SERVER" : "<%= APP_PROTO %>://<%= APP_HOST %>:<%= APP_PORT %>",
+  "AUTH_SERVER" : "http://localhost:3000",
+  "AUTH_DISPLAY": "popup",
+  "APP_AUTH_CALLBACK": "callback_<%= AUTH_DISPLAY %>.html"
+}

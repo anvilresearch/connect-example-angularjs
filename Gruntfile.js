@@ -23,11 +23,23 @@ module.exports = function (grunt) {
     dist: 'dist'
   };
 
-  // Define the configuration for all the tasks
-  grunt.initConfig({
+  var authConfig =
+    grunt.option('auth-client') ||
+    process.env.GRUNT_AUTH_CLIENT ||
+    'authconf.json';
+  grunt.log.writeln("Using %s", authConfig);
+  var authConfigData = grunt.file.readJSON(authConfig);
 
+  // Define the configuration for all the tasks
+  // note this will overwrite previous grunt.config properties
+  // with the object literal passed into the function
+  grunt.initConfig({
     // Project settings
     yeoman: appConfig,
+
+    auth_config: authConfig,
+
+    auth_config_data: authConfigData,
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
@@ -37,18 +49,20 @@ module.exports = function (grunt) {
         },
         files: [
           '<%= yeoman.app %>/{,*/}*.html',
+          '<%= yeoman.app %>/{,*/}*.js',
           '.tmp/styles/{,*/}*.css',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-        ]
+        ],
+        tasks: ['newer:copy']
       }
     },
 
     // The actual grunt server settings
     connect: {
       options: {
-        port: APP_PORT,
+        port: "<%= auth_config_data.APP_PORT %>", // may need to convert to number?
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'https://APP_HOST',
+        hostname: '<%= auth_config_data.APP_HOST %>',
         livereload: 35729
       },
       livereload: {
@@ -56,7 +70,7 @@ module.exports = function (grunt) {
           open: true,
           base: [
             '.tmp',
-            '<%= yeoman.app %>'
+            'dist/app'
           ],
           middleware: function (connect, options) {
             var middlewares = [];
@@ -76,7 +90,11 @@ module.exports = function (grunt) {
 
     // Empties folders to start fresh
     clean: {
-      server: '.tmp'
+      server: {
+          files: [{
+            src: ['.tmp', 'dist']
+          }]
+      }
     },
 
 
@@ -87,16 +105,46 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
-      }
+      },
+      dist: {
+        expand: true,
+        dest: 'dist',
+        src: [
+          'register_with_anvil_connect.sh',
+          '<%= yeoman.app %>/**'],
+        options: {
+          process: function( content, srcpath) {
+            return grunt.template.process(
+              content,
+              {data: authConfigData});
+          },
+        },
+      },
     },
 
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'copy:styles'
+        'copy:styles',
+        'copy:dist',
       ]
     },
 
+  });
+
+  grunt.registerTask('chmodScript', 'Makes script executable', function(target) {
+    var fs = require('fs');
+    fs.chmodSync('dist/register_with_anvil_connect.sh', '755');
+  });
+
+  grunt.registerTask('build', function (target) {
+    grunt.log.writeln('Build app in dist folder, matching auth server configuration in %s', grunt.config('auth_config'));
+    grunt.log.writeln('If not yet done register client using dist/register_with_anvil_connect.sh. See README.md');
+    grunt.task.run([
+      'clean',
+      'copy:dist',
+      'chmodScript',
+    ]);
   });
 
 
@@ -112,5 +160,6 @@ module.exports = function (grunt) {
       'watch'
     ]);
   });
+
 
 };
