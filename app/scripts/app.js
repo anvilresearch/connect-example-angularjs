@@ -58,7 +58,7 @@ angular
       })
 
       // HANDLE CALLBACK (REQUIRED BY FULL PAGE NAVIGATION ONLY)
-      .when('/callback', {
+      .when('/callback_page.html', {
         resolve: {
           session: function ($location, Anvil) {
             if ($location.hash()) {
