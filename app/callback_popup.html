@@ -1,24 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/bows/dist/bows.js"></script>
+    <script src="/bower_components/tiny-emitter/dist/tinyemitter.js"></script>
+    <script src="/bower_components/sjcl/sjcl.js"></script>
+    <script src="/bower_components/jwt-decode/build/jwt-decode.js"></script>
+
+    <script src="/bower_components/anvil-connect/anvil-connect.jquery.js"></script>
+    <script src="/bower_components/anvil-connect/anvil-connect.js"></script>
+    <script src="/bower_components/anvil-connect/anvil-connect.novalidate.js"></script>
+
     <script type="text/javascript">
       window.addEventListener('load', function () {
+        var log = bows('popup callback')
+
+        Anvil.configure({
+          issuer:       '<%=AUTH_SERVER%>',
+          client_id:    '<%= CLIENT_ID %>',
+          // redirect_uri: '<%=APP_SERVER%>/callback_dummy.html',
+          display:      'page',
+          scope:        'realm'
+        });
+
+        Anvil.init()
+
+        function show (id) {
+          document.getElementById('signing_in').style.display = 'none'
+          document.getElementById(id).style.display = 'block'
+        }
+
         var pageUrl = window.location.href
           , opener = window.opener
-          , pageOrigin = opener.location.origin;
+          , pageOrigin
+          if (opener) {
+            pageOrigin = opener.location.origin;
+          } else {
+            log.debug("No opener for window: ", window.location)
+          }
 
-          console.log("load callback")
-          console.log("pageUrl=" , pageUrl);
-          console.log("pageOrigin=" , pageOrigin);
-          console.log("opener=" , opener);
-        opener.postMessage(pageUrl, pageOrigin);
-        window.close();
+          log.debug("load callback")
+          log.debug("pageUrl=" , pageUrl);
+          log.debug("pageOrigin=" , pageOrigin);
+          log.debug("opener=" , opener);
+          if (opener) {
+            opener.postMessage(pageUrl, pageOrigin);
+          } else {
+            var fragment = Anvil.getUrlFragment(pageUrl)
+            var response = Anvil.parseFormUrlEncoded(fragment)
+            Anvil.promise.callback(response).then(
+              function (result) {
+                log.info("Anvil.callback succeeded: ", result)
+                show('signed_in')
+                window.close();
+              },
+              function (fault) {
+                log.info("Anvil.callback failed: ", fault)
+                show('not_signed_in')
+              }
+            )
+          }
       });
     </script>
   </head>
   <body>
-    <h1>Anvil Connect sign-in successful</h1>
-
-    <p>Please close this window.</p>
+    <div id='signing_in'>
+      <h1>Anvil Connect signing in...</h1>
+    </div>
+    <div id='signed_in' style="display: none;">
+      <h1>Anvil Connect sign-in successful</h1>
+      <p>Please close window</p>
+    </div>
+    <div id='not_signed_in' style="display: none;">
+      <h1>Anvil Connect sign-in not successful</h1>
+      <p>Please try again and close this window</p>
+    </div>
   </body>
 </html>
