@@ -2,5 +2,4 @@
 
 <p>You can view this because you are authenticated and you have permission. If are not authenticated or you do not have permission, this view should never render.</p>
 
-{{session.access_claims}}
-
+<pre>{{session.access_claims | json }}</pre>

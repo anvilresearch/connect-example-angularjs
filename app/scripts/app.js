@@ -19,12 +19,12 @@ angular
 
     // CONFIGURE ANVIL CONNECT
     AnvilProvider.configure({
-      issuer:       'SERVER_HOST',
-      client_id:    'CLIENT_ID',
+      issuer:       '<%=AUTH_SERVER%>',
+      client_id:    '<%=CLIENT_ID%>',
       //redirect_uri: 'http://localhost:9000/callback.html',
-      redirect_uri: 'https://APP_HOST:APP_PORT/callback',
-      //display:      'popup',
-      scope:        'realm'
+      redirect_uri: '<%=APP_SERVER%>/callback_<%= AUTH_DISPLAY%>.html',
+      display:      '<%=AUTH_DISPLAY%>',
+      scope:        'realm email'
     });
 
     $locationProvider.html5Mode(true);
@@ -58,7 +58,7 @@ angular
       })
 
       // HANDLE CALLBACK (REQUIRED BY FULL PAGE NAVIGATION ONLY)
-      .when('/callback', {
+      .when('/callback_page.html', {
         resolve: {
           session: function ($location, Anvil) {
             if ($location.hash()) {

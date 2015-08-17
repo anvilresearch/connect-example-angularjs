@@ -3,5 +3,6 @@ angular:
   ports:
     - "9000:80"
   volumes:
-    - ./app:/usr/share/nginx/html
+    - ./dist/app:/usr/share/nginx/html
+    - ./bower_components:/usr/share/nginx/html/bower_components
   restart: always

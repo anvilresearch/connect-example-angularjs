@@ -1,0 +1,10 @@
+{
+  "CLIENT_ID" : "71f62af7-c1ba-4481-adb4-2eccce9f9c43",
+  "APP_PROTO": "http",
+  "APP_HOST": "boot2docker",
+  "APP_PORT": "9000",
+  "APP_SERVER" : "<%= APP_PROTO %>://<%= APP_HOST %>:<%= APP_PORT %>",
+  "AUTH_SERVER" : "http://localhost:3000",
+  "AUTH_DISPLAY": "popup",
+  "APP_AUTH_CALLBACK": "callback_<%= AUTH_DISPLAY %>.html"
+}
