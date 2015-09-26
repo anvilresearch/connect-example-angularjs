@@ -11,7 +11,7 @@ client='{
     "<%= APP_SERVER %>/<%= APP_AUTH_CALLBACK %>",
     "<%= APP_SERVER %>/rp.html"],
   "post_logout_redirect_uris": ["<%= APP_SERVER %>"],
-  "trusted": "true"
+  "trusted": true
 }'
 
 echo "Registring nv add client $client"
