@@ -1,5 +1,5 @@
 'use strict'
-require('anvil-connect-js/lib/anvil-connect-angular')
+require('./anvil-connect-angular')
 require('angular-animate')
 require('angular-cookies')
 require('angular-resource')

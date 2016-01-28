@@ -1,17 +1,26 @@
 'use strict'
-var AnvilPlainInit = require('anvil-connect-js/lib/anvil-connect-plain').default
 var bows = require('bows')
+var Q = require('q')
+window.Anvil = require('anvil-connect-js').default
+// window allows access from setTimeout below.
 
 var log = bows('rp.html')
 
-window.Anvil = AnvilPlainInit()
-
-Anvil.configure({
+Anvil.init({
   issuer:       '<%=AUTH_SERVER%>',
   client_id:    '<%= CLIENT_ID %>',
   redirect_uri: '<%=APP_SERVER%>/rp.html',
   display:      'page',
   scope:        'realm'
+}, {
+  http: {
+    request: function (config) {
+      return Q.xhr(config)
+    },
+    getData: function (response) {
+      return response.data
+    }
+  }
 });
 
 Anvil.promise.deserialize();
@@ -70,4 +79,3 @@ function receiveMessage(event) {
 window.addEventListener("message", receiveMessage, false);
 
 setTimer()
-

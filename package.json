@@ -9,8 +9,9 @@
     "angular-route": "^1.4.8",
     "angular-sanitize": "^1.4.8",
     "angular-touch": "^1.4.8",
-    "anvil-connect-js": "^0.2.0",
+    "anvil-connect-js": "^0.2.1",
     "bows": "^1.4.8",
+    "q": "^1.4.1",
     "text-encoder-lite": "^1.0.0"
   },
   "devDependencies": {
@@ -41,6 +42,5 @@
     "clean-all": "grunt clean && rimraf bower_components && rimraf jspm/jspm_packages && rimraf node_modules",
     "watchify": "watchify app.browser/scripts/app.js -o app.browser/scripts/dev-bundle.js --verbose",
     "watchify-rp": "watchify app.browser/scripts/rp.js -o app.browser/scripts/rp-dev-bundle.js --verbose"
-
   }
 }
