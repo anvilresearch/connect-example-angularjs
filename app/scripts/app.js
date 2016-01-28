@@ -75,8 +75,7 @@ angular
           session: function ($location, Anvil) {
             log.debug('/<%= APP_AUTH_CALLBACK %>.resolve.session:', $location)
             if ($location.hash()) {
-              Anvil.promise.authorize().then(
-
+              return Anvil.promise.authorize().then(
                 // handle successful authorization
                 function (response) {
                   var dest = Anvil.destination(false)
@@ -84,7 +83,7 @@ angular
                   // there may be solutions with scope apply but this seems
                   // to work fine, although this may not be the best solution.
                   console.log('/<%= APP_AUTH_CALLBACK %> authorize() succeeded, destination=', dest)
-                  location.href =  dest || '/'
+                  $location.url(dest || '/')
                 },
 
                 // handle failed authorization
@@ -94,8 +93,8 @@ angular
 
               );
             } else {
-              $location.url(localStorage['anvil.connect.destination'] || '/');
-              delete localStorage['anvil.connect.destination']
+              var dest = Anvil.destination(false)
+              $location.url(dest || '/');
             }
           }
         }
