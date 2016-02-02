@@ -12,6 +12,7 @@
     "anvil-connect-js": "^0.2.1",
     "bows": "^1.4.8",
     "q": "^1.4.1",
+    "q-xhr": "^1.0.0",
     "text-encoder-lite": "^1.0.0"
   },
   "devDependencies": {
@@ -40,7 +41,9 @@
     "grunt-serve-build": "grunt serve_dist",
     "clean": "grunt clean",
     "clean-all": "grunt clean && rimraf bower_components && rimraf jspm/jspm_packages && rimraf node_modules",
-    "watchify": "watchify app.browser/scripts/app.js -o app.browser/scripts/dev-bundle.js --verbose",
-    "watchify-rp": "watchify app.browser/scripts/rp.js -o app.browser/scripts/rp-dev-bundle.js --verbose"
+    "watchify": "npm run watchify-app | npm run watchify-rp | npm run watchify-popup",
+    "watchify-app": "watchify app/scripts/app.js -o app.browser/scripts/dev-bundle.js --verbose",
+    "watchify-rp": "watchify app/scripts/rp.js -o app.browser/scripts/rp-dev-bundle.js --verbose",
+    "watchify-popup": "watchify app/scripts/callback_popup.js -o app.browser/scripts/popup-dev-bundle.js --verbose"
   }
 }

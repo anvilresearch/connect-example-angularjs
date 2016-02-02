@@ -1,18 +1,24 @@
 'use strict'
 var bows = require('bows')
-var Q = require('q')
+var Q = require('q-xhr')(window.XMLHttpRequest, require('q'))
 window.Anvil = require('anvil-connect-js').default
 // window allows access from setTimeout below.
+var anvilConfig = require('../../app.config/anvil-config')
 
 var log = bows('rp.html')
 
-Anvil.init({
-  issuer:       '<%=AUTH_SERVER%>',
-  client_id:    '<%= CLIENT_ID %>',
-  redirect_uri: '<%=APP_SERVER%>/rp.html',
-  display:      'page',
-  scope:        'realm'
-}, {
+function copy(dst, src) {
+  for (var prop in src) {
+    if (src.hasOwnProperty(prop))
+      dst[prop] = src[prop];
+  }
+  return dst;
+}
+
+Anvil.init(copy({
+    redirect_uri: anvilConfig.app_server + '/rp.html',
+    scope: 'realm'
+  }, anvilConfig), {
   http: {
     request: function (config) {
       return Q.xhr(config)

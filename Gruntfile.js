@@ -66,7 +66,9 @@ module.exports = function (grunt) {
         hostname: '<%= auth_config_data.APP_HOST %>',
         open: false,
         base: [
-          'app.browser'
+          'app.config',
+          'app.browser',
+          'app',
         ],
         middleware: function (connect, options) {
           var middlewares = [];
@@ -104,10 +106,15 @@ module.exports = function (grunt) {
 
     // Empties folders to start fresh
     clean: {
+      config: {
+        files: [{
+          src: ['app.config']
+        }]
+      },
       browser: {
-          files: [{
-            src: ['app.browser']
-          }]
+        files: [{
+          src: ['app.browser']
+        }]
       },
       dist: {
         files: [{
@@ -124,6 +131,22 @@ module.exports = function (grunt) {
         cwd: 'app/styles',
         src: '{,*/}*.css'
       },
+      config: {
+        options: {
+          process: function (content, srcpath) {
+            return grunt.template.process(
+              content,
+              {data: authConfigData});
+          },
+        },
+        expand: true,
+        cwd: 'app.config.templ',
+        dest: 'app.config',
+        src: [
+          'anvil-config.js',
+          'register_with_anvil_connect.sh'
+        ]
+      },
       browser: {
         options: {
           process: function (content, srcpath) {
@@ -132,23 +155,17 @@ module.exports = function (grunt) {
                 {data: authConfigData});
           },
         },
+        files: {
+          'app.browser/index.html': ['app/index.html']
+        }
+      },
+      distApp: {
         expand: true,
         cwd: 'app',
-        dest: 'app.browser',
+        dest: 'dist',
         src: ['**/*'],
       },
-      browserscript: {
-        dest: 'app.browser/',
-        src: ['register_with_anvil_connect.sh'],
-        options: {
-          process: function (content, srcpath) {
-            return grunt.template.process(
-                content,
-                {data: authConfigData});
-          },
-        },
-      },
-      dist: {
+      distBrowser: {
         expand: true,
         cwd: 'app.browser',
         dest: 'dist',
@@ -162,42 +179,14 @@ module.exports = function (grunt) {
           debug: true
         }
       },
-      // having lib and and browser to split bundles does not
-      // seem to buy much if one can use watchify also
-      //lib: {
-      //  options: {
-      //    alias: [
-      //      'angular:',
-      //      'angular-animate:',
-      //      'angular-cookies:',
-      //      'angular-resource:',
-      //      'angular-route:',
-      //      'angular-sanitize:',
-      //      'angular-touch:',
-      //      'bows:'
-      //    ]
-      //  },
-      //  src: ['.'],
-      //  dest: 'app.browser/scripts/dev-vendor-bundle.js'
-      //},
       browser: {
-        //options: {
-        //  external: [
-        //    'angular',
-        //    'angular-animate',
-        //    'angular-cookies',
-        //    'angular-resource',
-        //    'angular-route',
-        //    'angular-sanitize',
-        //    'angular-touch',
-        //    'bows'
-        //  ]
-        //},
         files: {
           'app.browser/scripts/dev-bundle.js':
-            ['app.browser/scripts/app.js'],
+            ['app/scripts/app.js'],
           'app.browser/scripts/rp-dev-bundle.js':
-            ['app.browser/scripts/rp.js']
+            ['app/scripts/rp.js'],
+          'app.browser/scripts/popup-dev-bundle.js':
+            ['app/scripts/callback_popup.js']
         }
       },
       dist: {
@@ -208,7 +197,8 @@ module.exports = function (grunt) {
         },
         files: {
           'dist/scripts/app-bundle.js': ['dist/scripts/app.js'],
-          'dist/scripts/rp-bundle.js': ['dist/scripts/rp.js']
+          'dist/scripts/rp-bundle.js': ['dist/scripts/rp.js'],
+          'dist/scripts/popup-bundle.js': ['dist/scripts/callback_popup.js']
         }
       }
     },
@@ -234,8 +224,15 @@ module.exports = function (grunt) {
             'bower_components/webcrypto-shim/webcrypto-shim.js',
             'node_modules/text-encoder-lite/index.js',
             'dist/scripts/rp-bundle.js'
+          ],
+          'dist/scripts/popup-bundle.min.js': [
+            'bower_components/es5-shim/es5-shim.js',
+            'bower_components/json3/lib/json3.min.js',
+            'bower_components/promiz/promiz.js',
+            'bower_components/webcrypto-shim/webcrypto-shim.js',
+            'node_modules/text-encoder-lite/index.js',
+            'dist/scripts/popup-bundle.js'
           ]
-
         }
       }
     },
@@ -244,7 +241,8 @@ module.exports = function (grunt) {
       dist: {
         files: {
           'dist/index.html': ['app.browser/index.html'],
-          'dist/rp.html': ['app.browser/rp.html']
+          'dist/rp.html': ['app.browser/rp.html'],
+          'dist/callback_popup.html': ['app.browser/callback_popup.html']
         }
       }
     }
@@ -252,33 +250,39 @@ module.exports = function (grunt) {
 
   grunt.registerTask('chmodScript', 'Makes script executable', function(target) {
     var fs = require('fs');
-    fs.chmodSync('app.browser/register_with_anvil_connect.sh', '755');
+    fs.chmodSync('app.config/register_with_anvil_connect.sh', '755');
   });
 
 
+  grunt.registerTask('config', function (target) {
+    grunt.log.writeln('Generating config in app.config folder, matching auth server configuration in %s', grunt.config('auth_config'));
+    grunt.log.writeln('If not yet done register client using app.config/register_with_anvil_connect.sh. See README.md');
+    grunt.task.run([
+      'clean:config',
+      'copy:config',
+      'chmodScript',
+    ]);
+  });
+
   grunt.registerTask('build_browser', function (target) {
-    grunt.log.writeln('Build app in app.browser folder, matching auth server configuration in %s', grunt.config('auth_config'));
-    grunt.log.writeln('If not yet done register client using app.browser/register_with_anvil_connect.sh. See README.md');
+    grunt.log.writeln('Build app scripts in app.browser folder, matching auth server configuration in %s', grunt.config('auth_config'));
     grunt.task.run([
       'clean:browser',
       'copy:browser',
-      'browserify:browser',
-      'copy:browserscript',
-      'chmodScript',
+      'browserify:browser'
     ]);
   });
 
   grunt.registerTask('build', function (target) {
     grunt.log.writeln('Build app in dist folder, matching auth server configuration in %s', grunt.config('auth_config'));
-    grunt.log.writeln('If not yet done register client using dist/register_with_anvil_connect.sh. See README.md');
     grunt.task.run([
       'build_browser',
       'clean:dist',
-      'copy:dist',
+      'copy:distApp',
+      'copy:distBrowser',
       'browserify:dist',
       'uglify:dist',
-      'processhtml:dist',
-      'chmodScript',
+      'processhtml:dist'
     ]);
   });
 

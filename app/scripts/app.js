@@ -6,6 +6,7 @@ require('angular-resource')
 require('angular-route')
 require('angular-sanitize')
 require('angular-touch')
+var anvilConfig = require('../../app.config/anvil-config')
 
 var bows = require('bows')
 
@@ -28,16 +29,13 @@ angular
   ])
 
   .config(function ($locationProvider, $routeProvider, AnvilProvider) {
+    var auth_callback_route = '/' + 'callback_' + anvilConfig.display;
 
     // CONFIGURE ANVIL CONNECT
-    AnvilProvider.configure({
-      issuer:       '<%=AUTH_SERVER%>',
-      client_id:    '<%=CLIENT_ID%>',
-      //redirect_uri: 'http://localhost:9000/callback.html',
-      redirect_uri: '<%=APP_SERVER%>/<%=APP_AUTH_CALLBACK%>',
-      display:      '<%=AUTH_DISPLAY%>' // ,
-      // scope:        'realm email'
-    });
+    AnvilProvider.configure(
+      angular.merge({
+          redirect_uri: anvilConfig.app_server + auth_callback_route
+        }, anvilConfig));
 
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix = '!';
@@ -70,10 +68,10 @@ angular
       })
 
       // HANDLE CALLBACK (REQUIRED BY FULL PAGE NAVIGATION ONLY)
-      .when('/<%= APP_AUTH_CALLBACK %>', {
+      .when(auth_callback_route, {
         resolve: {
           session: function ($location, Anvil) {
-            log.debug('/<%= APP_AUTH_CALLBACK %>.resolve.session:', $location)
+            log.debug('' + auth_callback_route + '.resolve.session:', $location)
             if ($location.hash()) {
               return Anvil.promise.authorize().then(
                 // handle successful authorization
@@ -82,7 +80,7 @@ angular
                   // $location.url( dest || '/'); did not react for me
                   // there may be solutions with scope apply but this seems
                   // to work fine, although this may not be the best solution.
-                  console.log('/<%= APP_AUTH_CALLBACK %> authorize() succeeded, destination=', dest)
+                  console.log('' + auth_callback_route + ' authorize() succeeded, destination=', dest)
                   $location.url(dest || '/')
                 },
 
