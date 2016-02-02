@@ -29,7 +29,9 @@ Anvil.init(copy({
   }
 });
 
-Anvil.promise.deserialize();
+Anvil.promise.deserialize().catch(function (err) {
+  Anvil.reset()
+});
 
 var response = (location.hash) ? Anvil.parseFormUrlEncoded(location.hash.substring(1)) : {};
 
@@ -42,6 +44,9 @@ if (location.hash) {
       },
       function failure (fault) {
         log.info('RP CALLBACK FAILURE', fault);
+        log.debug('location', location)
+        var dest = Anvil.destination()
+        log.debug('dest=',dest)
       })
   })
 }
