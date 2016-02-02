@@ -5,7 +5,7 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="/styles/main.css">
     <base href="/" />
   </head>
@@ -32,19 +32,19 @@
 
     <!-- build:js scripts/app-bundle.min.js  -->
     <!--[if lt IE 9]>
-    <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <script src="node_modules/es5-shim/es5-shim.js"></script>
+    <script src="node_modules/json3/lib/json3.min.js"></script>
     <![endif]-->
 
 
-    <script src="bower_components/promiz/promiz.js"></script>
-    <script src="bower_components/webcrypto-shim/webcrypto-shim.js"></script>
+    <script src="node_modules/promiz/promiz.js"></script>
+    <script src="node_modules/webcrypto-shim/webcrypto-shim.js"></script>
     <script src="node_modules/text-encoder-lite/index.js"></script>
     <script src="scripts/dev-bundle.js"></script>
     <!-- /build   -->
 
-    <!--- Enable these for OpenIDConnect session management -->
+    <!--- Enable these for OpenIDConnect session management
     <iframe id="rp" style="visibility:hidden;display:none" src="/rp.html" frameborder="0"></iframe>
-    <iframe id="op" style="visibility:hidden;display:none" src="<%=AUTH_SERVER%>/session" frameborder="0"></iframe>
+    <iframe id="op" style="visibility:hidden;display:none" src="<%=AUTH_SERVER%>/session" frameborder="0"></iframe> -->
 </body>
 </html>

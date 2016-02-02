@@ -20,7 +20,7 @@ module.exports = function (grunt) {
 
   // Configurable paths for the application
   var appConfig = {
-    app: require('./bower.json').appPath || 'app',
+    app: 'app',
   };
 
   var authConfig =
@@ -210,26 +210,26 @@ module.exports = function (grunt) {
       dist: {
         files: {
           'dist/scripts/app-bundle.min.js': [
-            'bower_components/es5-shim/es5-shim.js',
-            'bower_components/json3/lib/json3.min.js',
-            'bower_components/promiz/promiz.js',
-            'bower_components/webcrypto-shim/webcrypto-shim.js',
+            'node_modules/es5-shim/es5-shim.js',
+            'node_modules/json3/lib/json3.min.js',
+            'node_modules/promiz/promiz.js',
+            'node_modules/webcrypto-shim/webcrypto-shim.js',
             'node_modules/text-encoder-lite/index.js',
             'dist/scripts/app-bundle.js'
           ],
           'dist/scripts/rp-bundle.min.js': [
-            'bower_components/es5-shim/es5-shim.js',
-            'bower_components/json3/lib/json3.min.js',
-            'bower_components/promiz/promiz.js',
-            'bower_components/webcrypto-shim/webcrypto-shim.js',
+            'node_modules/es5-shim/es5-shim.js',
+            'node_modules/json3/lib/json3.min.js',
+            'node_modules/promiz/promiz.js',
+            'node_modules/webcrypto-shim/webcrypto-shim.js',
             'node_modules/text-encoder-lite/index.js',
             'dist/scripts/rp-bundle.js'
           ],
           'dist/scripts/popup-bundle.min.js': [
-            'bower_components/es5-shim/es5-shim.js',
-            'bower_components/json3/lib/json3.min.js',
-            'bower_components/promiz/promiz.js',
-            'bower_components/webcrypto-shim/webcrypto-shim.js',
+            'node_modules/es5-shim/es5-shim.js',
+            'node_modules/json3/lib/json3.min.js',
+            'node_modules/promiz/promiz.js',
+            'node_modules/webcrypto-shim/webcrypto-shim.js',
             'node_modules/text-encoder-lite/index.js',
             'dist/scripts/popup-bundle.js'
           ]
