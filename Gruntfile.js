@@ -248,13 +248,22 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('chmodScript', 'Makes script executable', function(target) {
+  grunt.registerTask('chmodScript', '(internal) Makes script executable. Used by config task', function(target) {
     var fs = require('fs');
     fs.chmodSync('app.config/register_with_anvil_connect.sh', '755');
   });
 
 
-  grunt.registerTask('config', function (target) {
+  grunt.registerTask('build_browser', '(internal) Builds app in app.browser. Used by serve task.', function (target) {
+    grunt.log.writeln('Build app scripts in app.browser folder, matching auth server configuration in %s', grunt.config('auth_config'));
+    grunt.task.run([
+      'clean:browser',
+      'copy:browser',
+      'browserify:browser'
+    ]);
+  });
+
+  grunt.registerTask('config', 'Primary task: Generates config in app.config based on authconf.json', function (target) {
     grunt.log.writeln('Generating config in app.config folder, matching auth server configuration in %s', grunt.config('auth_config'));
     grunt.log.writeln('If not yet done register client using app.config/register_with_anvil_connect.sh. See README.md');
     grunt.task.run([
@@ -264,17 +273,23 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('build_browser', function (target) {
-    grunt.log.writeln('Build app scripts in app.browser folder, matching auth server configuration in %s', grunt.config('auth_config'));
+  grunt.registerTask('serve', 'Primary task: Build then start a connect web server\n (serve for livereload app or serve:dist) ', function (target) {
+    if (target === 'dist') {
+      return grunt.task.run(['build', 'connect:dist']);
+    }
+
+    grunt.log.writeln('Builds app, starts livereload server and opens browser.');
+    grunt.log.writeln('NOTE: also start `npm run watchify` to rebuild the browserify bundles on changes.');
+
     grunt.task.run([
-      'clean:browser',
-      'copy:browser',
-      'browserify:browser'
+      'build_browser',
+      'connect:livereload',
+      'watch'
     ]);
   });
 
-  grunt.registerTask('build', function (target) {
-    grunt.log.writeln('Build app in dist folder, matching auth server configuration in %s', grunt.config('auth_config'));
+  grunt.registerTask('build', 'Builds app in /dist folder', function (target) {
+    grunt.log.writeln('** Build app in dist folder, matching auth server configuration in %s', grunt.config('auth_config'));
     grunt.task.run([
       'build_browser',
       'clean:dist',
@@ -286,24 +301,10 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('serve_dist', 'serve already build files from dist', function (target) {
+  grunt.registerTask('serve_dist', 'Starts server on /dist', function (target) {
     grunt.task.run([
       'connect:dist'
     ]);
   });
-
-
-  grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
-    if (target === 'dist') {
-      return grunt.task.run(['build', 'connect:dist']);
-    }
-
-    grunt.task.run([
-        'build_browser',
-        'connect:livereload',
-        'watch'
-      ]);
-  });
-
 
 };
