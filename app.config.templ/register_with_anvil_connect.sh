@@ -10,12 +10,15 @@ fail() {
   echo "$message" >&2
   echo "You may need to login with 'nvl login'"  >&2
   echo "Perhaps nvl is not yet setup? Consult connect-cli getting started documentation"  >&2
+  echo "" >&2
+  echo "For other problems consult the output of the nvl command in nvl.log" >&2
   exit 2
 }
 
 echo "Registering this client with <%= ISSUER_NAME %>"
+echo "Command output written to nvl.log"
 
-out=$(nvl client:register \
+nvl client:register \
   --issuer "<%= ISSUER_NAME %>" \
   --trusted \
   --name "Angular example with <%= AUTH_DISPLAY %> for <%= APP_SERVER %>" \
@@ -28,7 +31,8 @@ out=$(nvl client:register \
   --redirect-uri "<%= APP_SERVER %>/<%= APP_AUTH_CALLBACK %>" \
   --redirect-uri "<%= APP_SERVER %>/rp.html" \
   --post-logout-redirect-uri "<%= APP_SERVER %>/" \
-  --post-logout-redirect-uri "<%= APP_SERVER %>/")
+  --post-logout-redirect-uri "<%= APP_SERVER %>/" > nvl.log 2>&1
+
 
 # duplication of --post-logout-redirect-uri see https://github.com/anvilresearch/connect-cli/issues/70
 
@@ -40,7 +44,7 @@ fi
 # From OS X:
 #  $ echo "$out" | grep "_id" | grep -o -E '([[:xdigit:]]*-){1,10}[[:xdigit:]]*'
 #  ec8262ae-28d5-4943-8237-d8145042c3e0
-client_id=$(echo "$out" | grep "_id" | grep -o -E '([[:xdigit:]]*-){1,10}[[:xdigit:]]*')
+client_id=$(cat nvl.log | grep "_id" | grep -o -E '([[:xdigit:]]*-){1,10}[[:xdigit:]]*')
 
 [ -n "$client_id" ] || fail
 
