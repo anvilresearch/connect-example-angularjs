@@ -51,7 +51,8 @@ module.exports = function (grunt) {
         files: [
           'app/{,*/}*.html',
           'app/styles/{,*/}*.css',
-          'app/scripts/{,*/}*.js'
+          'app/scripts/{,*/}*.js',
+          'app.config/{,*/}*.js'
         ],
         tasks: ['newer:copy:browser']
       }

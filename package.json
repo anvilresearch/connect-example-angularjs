@@ -46,8 +46,8 @@
     "clean": "grunt clean",
     "clean-all": "grunt clean && rimraf bower_components && rimraf jspm/jspm_packages && rimraf node_modules",
     "watchify": "npm run watchify-app | npm run watchify-rp | npm run watchify-popup",
-    "watchify-app": "watchify app/scripts/app.js -o app.browser/scripts/dev-bundle.js --verbose",
-    "watchify-rp": "watchify app/scripts/rp.js -o app.browser/scripts/rp-dev-bundle.js --verbose",
-    "watchify-popup": "watchify app/scripts/callback_popup.js -o app.browser/scripts/popup-dev-bundle.js --verbose"
+    "watchify-app": "watchify app/scripts/app.js --debug -o app.browser/scripts/dev-bundle.js --verbose",
+    "watchify-rp": "watchify app/scripts/rp.js --debug -o app.browser/scripts/rp-dev-bundle.js --verbose",
+    "watchify-popup": "watchify app/scripts/callback_popup.js --debug -o app.browser/scripts/popup-dev-bundle.js --verbose"
   }
 }
