@@ -29,7 +29,7 @@ angular
   ])
 
   .config(function ($locationProvider, $routeProvider, AnvilProvider) {
-    var auth_callback_route = '/' + 'callback_' + anvilConfig.display;
+    var auth_callback_route = '/' + anvilConfig.callback;
 
     // CONFIGURE ANVIL CONNECT
     AnvilProvider.configure(
@@ -80,7 +80,7 @@ angular
                   // $location.url( dest || '/'); did not react for me
                   // there may be solutions with scope apply but this seems
                   // to work fine, although this may not be the best solution.
-                  console.log('' + auth_callback_route + ' authorize() succeeded, destination=', dest)
+                  log.debug('' + auth_callback_route + ' authorize() succeeded, destination=', dest)
                   $location.url(dest || '/')
                 },
 

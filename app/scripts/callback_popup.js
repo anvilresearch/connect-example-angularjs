@@ -7,7 +7,7 @@ var anvilConfig = require('../../app.config/anvil-config')
 function copy(dst, src) {
   for (var prop in src) {
     if (src.hasOwnProperty(prop))
-      dst[prop] = obj[prop];
+      dst[prop] = src[prop];
   }
   return dst;
 }

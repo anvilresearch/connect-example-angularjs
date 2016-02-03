@@ -1,7 +1,11 @@
 'use strict'
 
-var Anvil = require('anvil-connect-js').default
 require('angular')
+var bows = require('bows')
+
+var log = bows('ac-angular')
+
+var Anvil = require('anvil-connect-js').default
 
 function init (providerOptions, $http, $q, $location, $window, $document) {
   Anvil.init(providerOptions, {
@@ -42,9 +46,12 @@ angular.module('anvil', [])
 
     function requireAuthentication ($location, Anvil) {
       if (!Anvil.isAuthenticated()) {
-        Anvil.promise.authorize()
+        return Anvil.promise.authorize()
+          .catch(function (err) {
+            log.debug('requireAuthentication: authorize() failed', err)
+            return false
+          })
       }
-
       return Anvil.session
     }
 
@@ -58,6 +65,10 @@ angular.module('anvil', [])
       return ['$location', 'Anvil', function requireScope ($location, Anvil) {
         if (!Anvil.isAuthenticated()) {
           return Anvil.promise.authorize()
+            .catch(function (err) {
+              log.debug('requireScope: authorize() failed', err)
+              return false
+            })
         } else if (Anvil.session.access_claims.scope.indexOf(scope) === -1) {
           $location.path(fail)
           return false
