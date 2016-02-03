@@ -98,6 +98,15 @@ angular.module('anvil', [])
       '$document',
       '$window', function ($q, $http, $rootScope, $location, $document, $window) {
         init(null, $http, $q, $location, $window, $document)
+        Anvil.on('not-authenticated', function(ev) {
+          log.debug('not-authenticated event: calling $rootScope.$apply()', ev)
+          $location.url('/')
+          $rootScope.$apply()
+        })
+        Anvil.on('authenticated', function(ev) {
+          log.debug('authenticated event: calling $rootScope.$apply()', ev)
+          $rootScope.$apply()
+        })
         return Anvil
       }]
 

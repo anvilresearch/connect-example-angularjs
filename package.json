@@ -9,7 +9,7 @@
     "angular-route": "^1.4.8",
     "angular-sanitize": "^1.4.8",
     "angular-touch": "^1.4.8",
-    "anvil-connect-js": "^0.2.4",
+    "anvil-connect-js": "^0.2.5",
     "bootstrap": "^3.3.6",
     "bows": "^1.4.8",
     "es5-shim": "^4.5.2",

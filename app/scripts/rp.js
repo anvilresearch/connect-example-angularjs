@@ -5,7 +5,7 @@ window.Anvil = require('anvil-connect-js').default
 // window allows access from setTimeout below.
 var anvilConfig = require('../../app.config/anvil-config')
 
-var log = bows('rp.html')
+var log = bows('rp.js')
 
 function copy(dst, src) {
   for (var prop in src) {
@@ -36,6 +36,7 @@ Anvil.promise.deserialize().catch(function (err) {
 var response = (location.hash) ? Anvil.parseFormUrlEncoded(location.hash.substring(1)) : {};
 
 if (location.hash) {
+  log.debug('Loading rp.js: parsed hash=', response)
   Anvil.promise.prepareAuthorization().then( function () {
     Anvil.promise.callback(response).then(
       function success (session) {
@@ -51,11 +52,10 @@ if (location.hash) {
   })
 }
 
-// start checking the session every 30 seconds
+// start checking the session every 5 seconds
 function setTimer() {
-  var timer = setInterval("Anvil.checkSession('op')", 30*1000);
+  var timer = setInterval("Anvil.checkSession('op')", 5*1000);
 }
-
 
 
 // listen for changes to OP browser state
@@ -71,7 +71,7 @@ function receiveMessage(event) {
 
   // SESSION STATE IS THE SAME
   if (event.data === 'unchanged') {
-    log.info('session state: unchanged');
+    ; // do nothing
   }
 
   // SESSION STATE HAS CHANGED
