@@ -35,11 +35,13 @@
     "grunt-processhtml": "^0.3.8",
     "grunt-shell": "^1.1.2",
     "load-grunt-tasks": "^3.4.0",
+    "rimraf": "^2.5.2",
     "serve-static": "^1.10.0",
     "time-grunt": "^1.2.2",
     "watchify": "^3.7.0"
   },
   "scripts": {
+    "config": "grunt config",
     "dev": "grunt serve",
     "build": "grunt build",
     "grunt-serve-build": "grunt serve_dist",
