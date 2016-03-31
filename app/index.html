@@ -5,8 +5,9 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="/styles/main.css">
+    <base href="/" />
   </head>
 
   <body ng-app="AnvilConnectClient">
@@ -15,7 +16,7 @@
         <ul class="nav nav-pills pull-right">
           <li><a href="/requires/authentication">Protected</a></li>
           <li><a href="/requires/scope">Scoped</a></li>
-          <li ng-show='session.userInfo'><a ng-href='#'>{{session.userInfo.name}}</a></li>
+          <li ng-show='session.userInfo'><a ng-href='#'>{{session.userInfo.name || session.userInfo.given_name || session.userInfo.email}} </a></li>
           <li ng-hide='session.userInfo'><a ng-href='#' ng-click="signin()">Signin</a></li>
           <li ng-show='session.userInfo'><a ng-href='#' ng-click="signout()">Signout</a></li>
         </ul>
@@ -29,54 +30,21 @@
       </div>
     </div>
 
+    <!-- build:js scripts/app-bundle.min.js  -->
     <!--[if lt IE 9]>
-    <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <script src="node_modules/es5-shim/es5-shim.js"></script>
+    <script src="node_modules/json3/lib/json3.min.js"></script>
     <![endif]-->
 
-    <script src="/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/bower_components/angular/angular.js"></script>
-    <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="/bower_components/angular-resource/angular-resource.js"></script>
-    <script src="/bower_components/angular-cookies/angular-cookies.js"></script>
-    <script src="/bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="/bower_components/angular-animate/angular-animate.js"></script>
-    <script src="/bower_components/angular-touch/angular-touch.js"></script>
-    <script src="/bower_components/angular-route/angular-route.js"></script>
 
-    <!-- AFTER LOADING ANGULAR DEPENDENCIES -->
-    <script src="/bower_components/sjcl/sjcl.js"></script>
+    <script src="node_modules/promiz/promiz.js"></script>
+    <script src="node_modules/webcrypto-shim/webcrypto-shim.js"></script>
+    <script src="node_modules/text-encoder-lite/index.js"></script>
+    <script src="scripts/dev-bundle.js"></script>
+    <!-- /build   -->
 
-    <script src="/bower_components/crypto-js/components/core.js"></script>
-    <script src="/bower_components/crypto-js/components/sha1.js"></script>
-    <script src="/bower_components/crypto-js/components/sha256.js"></script>
-    <script src="/bower_components/crypto-js/components/x64-core.js"></script>
-    <script src="/bower_components/crypto-js/components/sha512.js"></script>
-
-    <script src="/bower_components/jsrsasign/ext/base64.js"></script>
-    <script src="/bower_components/jsrsasign/ext/jsbn.js"></script>
-    <script src="/bower_components/jsrsasign/ext/jsbn2.js"></script>
-    <script src="/bower_components/jsrsasign/ext/rsa.js"></script>
-    <script src="/bower_components/jsrsasign/ext/rsa2.js"></script>
-    <script src="/bower_components/jsrsasign/rsapem-1.1.js"></script>
-    <script src="/bower_components/jsrsasign/rsasign-1.2.min.js"></script>
-    <script src="/bower_components/jsrsasign/asn1hex-1.1.js"></script>
-    <!--<script src="/bower_components/jsrsasign/x509-1.1.js"></script>-->
-    <script src="/bower_components/jsrsasign/crypto-1.1.js"></script>
-    <script src="/bower_components/jsrsasign/base64x-1.1.js"></script>
-    <script src="/bower_components/jsrsasign/keyutil-1.0.js"></script>
-
-    <script src="/bower_components/jsjws/ext/json-sans-eval.js"></script>
-    <script src="/bower_components/jsjws/jws-2.0.js"></script>
-
-    <script src="/bower_components/anvil-connect/anvil-connect.angular.js"></script>
-    <!-- BEFORE LOADING APP -->
-
-    <script src="/scripts/app.js"></script>
-
-    <!---
+    <!--- Enable these for OpenIDConnect session management -->
     <iframe id="rp" style="visibility:hidden;display:none" src="/rp.html" frameborder="0"></iframe>
     <iframe id="op" style="visibility:hidden;display:none" src="<%=AUTH_SERVER%>/session" frameborder="0"></iframe>
-    --->
 </body>
 </html>

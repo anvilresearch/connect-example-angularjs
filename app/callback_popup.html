@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script type="text/javascript">
-      window.addEventListener('load', function () {
-        var pageUrl = window.location.href
-          , opener = window.opener
-          , pageOrigin = opener.location.origin;
+    <!-- build:js scripts/popup-bundle.min.js  -->
+    <!--[if lt IE 9]>
+    <script src="node_modules/es5-shim/es5-shim.js"></script>
+    <script src="node_modules/json3/lib/json3.min.js"></script>
+    <![endif]-->
 
-          console.log("load callback")
-          console.log("pageUrl=" , pageUrl);
-          console.log("pageOrigin=" , pageOrigin);
-          console.log("opener=" , opener);
-        opener.postMessage(pageUrl, pageOrigin);
-        window.close();
-      });
-    </script>
+    <script src="node_modules/promiz/promiz.js"></script>
+    <script src="node_modules/webcrypto-shim/webcrypto-shim.js"></script>
+    <script src="node_modules/text-encoder-lite/index.js"></script>
+    <script src="scripts/popup-dev-bundle.js"></script>
+    <!-- /build   -->
   </head>
   <body>
-    <h1>Anvil Connect sign-in successful</h1>
-
-    <p>Please close this window.</p>
+    <div id='signing_in'>
+      <h1>Anvil Connect signing in...</h1>
+    </div>
+    <div id='signed_in' style="display: none;">
+      <h1>Anvil Connect sign-in successful</h1>
+      <p>Please close window</p>
+    </div>
+    <div id='not_signed_in' style="display: none;">
+      <h1>Anvil Connect sign-in not successful</h1>
+      <p>Please try again and close this window</p>
+    </div>
   </body>
 </html>

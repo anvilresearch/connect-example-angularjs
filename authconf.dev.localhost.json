@@ -4,6 +4,7 @@
   "APP_HOST": "localhost",
   "APP_PORT": "9000",
   "APP_SERVER" : "<%= APP_PROTO %>://<%= APP_HOST %>:<%= APP_PORT %>",
+  "ISSUER_NAME" : "localhost-3000",
   "AUTH_SERVER" : "http://localhost:3000",
   "AUTH_DISPLAY": "popup",
   "APP_AUTH_CALLBACK": "callback_<%= AUTH_DISPLAY %>.html"

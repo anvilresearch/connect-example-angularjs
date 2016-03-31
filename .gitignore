@@ -1,6 +1,10 @@
-node_modules
+app.browser
+app.config
+bower_components
 dist
+keys
+node_modules
 .tmp
 .sass-cache
 authconf.json
-bower_components
+nvl.log

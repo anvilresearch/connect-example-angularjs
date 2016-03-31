@@ -1,4 +1,16 @@
-'use strict';
+'use strict'
+require('./anvil-connect-angular')
+require('angular-animate')
+require('angular-cookies')
+require('angular-resource')
+require('angular-route')
+require('angular-sanitize')
+require('angular-touch')
+var anvilConfig = require('../../app.config/anvil-config')
+
+var bows = require('bows')
+
+var log = bows('app')
 
 /**
  * Anvil Connect AngularJS Example App
@@ -6,6 +18,7 @@
 
 angular
   .module('AnvilConnectClient', [
+    'anvil',
     'ngAnimate',
     'ngCookies',
     'ngResource',
@@ -16,16 +29,13 @@ angular
   ])
 
   .config(function ($locationProvider, $routeProvider, AnvilProvider) {
+    var auth_callback_route = '/' + anvilConfig.callback;
 
     // CONFIGURE ANVIL CONNECT
-    AnvilProvider.configure({
-      issuer:       '<%=AUTH_SERVER%>',
-      client_id:    '<%=CLIENT_ID%>',
-      //redirect_uri: 'http://localhost:9000/callback.html',
-      redirect_uri: '<%=APP_SERVER%>/callback_<%= AUTH_DISPLAY%>.html',
-      display:      '<%=AUTH_DISPLAY%>',
-      scope:        'realm email'
-    });
+    AnvilProvider.configure(
+      angular.merge({
+          redirect_uri: anvilConfig.app_server + auth_callback_route
+        }, anvilConfig));
 
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix = '!';
@@ -48,7 +58,7 @@ angular
         templateUrl: '/views/requiresScope.html',
         controller: 'RequiresScopeCtrl',
         resolve: {
-          session: AnvilProvider.requireScope('realm', '/unauthorized')
+          session: AnvilProvider.requireScope('profile', '/unauthorized')
         }
       })
 
@@ -58,16 +68,20 @@ angular
       })
 
       // HANDLE CALLBACK (REQUIRED BY FULL PAGE NAVIGATION ONLY)
-      .when('/callback_page.html', {
+      .when(auth_callback_route, {
         resolve: {
           session: function ($location, Anvil) {
+            log.debug('' + auth_callback_route + '.resolve.session:', $location)
             if ($location.hash()) {
-              Anvil.authorize().then(
-
+              return Anvil.promise.authorize().then(
                 // handle successful authorization
                 function (response) {
-                  $location.url(localStorage['anvil.connect.destination'] || '/');
-                  delete localStorage['anvil.connect.destination']
+                  var dest = Anvil.destination(false)
+                  // $location.url( dest || '/'); did not react for me
+                  // there may be solutions with scope apply but this seems
+                  // to work fine, although this may not be the best solution.
+                  log.debug('' + auth_callback_route + ' authorize() succeeded, destination=', dest)
+                  $location.url(dest || '/')
                 },
 
                 // handle failed authorization
@@ -77,8 +91,8 @@ angular
 
               );
             } else {
-              $location.url(localStorage['anvil.connect.destination'] || '/');
-              delete localStorage['anvil.connect.destination']
+              var dest = Anvil.destination(false)
+              $location.url(dest || '/');
             }
           }
         }
@@ -88,31 +102,58 @@ angular
         redirectTo: '/'
       });
   })
-
   .run(function (Anvil) {
-    Anvil.getKeys().then(function (jwks) {
-      console.log('Loaded JWKs', jwks)
+    log.debug('run() entering')
+    /**
+     * Reinstate an existing session
+     */
+    Anvil.promise.deserialize().catch( function () {
+      log.debug('Ignore promise rejection when reinstating session')
+    })
+    Anvil.promise.prepareAuthorization().then(function (result) {
+      log.debug('prepareAuthorization succeeded:', result)
+    }, function (err) {
+      log.error('prepareAuthorization failed:', err)
     })
   })
-
   .controller('SigninCtrl', function ($scope, Anvil) {
 
+    $scope.session = Anvil.session;
+
+    log.debug('SigninCtrl() init: adding Anvil.once("authenticated"..) listener')
+    Anvil.once('authenticated', function () {
+      log.debug('SigninCtrl() init: authenticated callback: calling $scope.$apply')
+      $scope.$apply();
+    })
+
     $scope.signin = function () {
-      Anvil.authorize()
+      log.debug('SigninCtrl.signin(): entering function')
+      Anvil.promise.authorize()
+      Anvil.once('authenticated', function () {
+        log.debug('SigninCtrl.signin() authenticated callback: calling $scope.$apply')
+        $scope.$apply();
+      })
     };
 
     $scope.signout = function () {
       Anvil.signout('/');
     };
 
-    $scope.$watch(function () { return Anvil.session }, function (newVal) {
-      $scope.session = newVal;
-    });
+    $scope.$watch(
+      // proper formatting allows easier setting of breakpoints.
+      function () {
+        return Anvil.session
+      },
+      function (newVal) {
+        $scope.session = newVal
+      },
+      true
+    );
 
   })
 
   .controller('MainCtrl', function ($scope, Anvil) {
-    // ...
+    $scope.session = Anvil.session
   })
 
   .controller('RequiresAuthenticationCtrl', function ($scope, session) {
