@@ -24,11 +24,11 @@ To get the webcrypto code for testing the fork is used:
 
 ```console
 $ # create or got to some suited directory then
-$ git clone https://github.com/henrjk/connect-js.git
+$ git clone https://github.com/anvilresearch/connect-js.git
 $ cd connect-js
-$ git checkout webcrypto
+$ git checkout webcrypto-api
 
-## These steps are described here: https://github.com/henrjk/connect-js/tree/webcrypto
+## These steps are described here: https://github.com/anvilresearch/connect-js/tree/webcrypto-api
 $ npm install
 $ npm run test
 ```
@@ -38,20 +38,30 @@ in the previous step
 
 ```console
 $ # create or got to some suited directory. This could be the same as above.
-$ git clone https://github.com/henrjk/connect-example-angularjs.git
+$ git clone https://github.com/anvilresearch/connect-example-angularjs.git
 $ cd connect-example-angularjs
-$ git checkout use-npm
+$ git checkout henrjk-use-npm
 ```
 
 Now go to the directory where connect-js was cloned to and issue these commands:
 ```console
-connect-js dev (webcrypto)$ npm link
+connect-js dev (webcrypto-api)$ npm link
 
-> anvil-connect-js@0.2.0 prepublish /Users/dev/code/work/connect-js-fork/connect-js
+> anvil-connect-js@0.2.6 postinstall /Users/dev/code/connect-js
+> jspm install
+
+     Looking up npm:babel-runtime
+... about 40 more lines of output ...
+ok   Up to date - babel-runtime as npm:babel-runtime@^5.8.24 (5.8.34)
+ok   Install tree has no forks.
+
+ok   Install complete.
+
+> anvil-connect-js@0.2.6 prepublish /Users/dev/code/connect-js
 > npm run build
 
 
-> anvil-connect-js@0.2.0 build /Users/dev/code/work/connect-js-fork/connect-js
+> anvil-connect-js@0.2.6 build /Users/dev/code/connect-js
 > grunt
 
 Running "clean:dist" (clean) task
@@ -60,15 +70,15 @@ Running "clean:dist" (clean) task
 Running "babel:compile" (babel) task
 
 Done, without errors.
-/Users/dev/.nvm/versions/node/v0.12.6/lib/node_modules/anvil-connect-js -> /Users/dev/code/work/connect-js-fork/connect-js
-connect-js dev (webcrypto)$
-```
+/Users/dev/.nvm/versions/node/v0.12.6/lib/node_modules/anvil-connect-js -> /Users/dev/code/connect-js
 
+/connect-js dev (webcrypto-api)$
+```
 Then go back to the `connect-example-angularjs` directory and do the following:
 
 ```console
-connect-js dev (webcrypto)$ cd ../connect-example-angularjs/
-connect-example-angularjs dev (use-npm)$ npm link anvil-connect-js
+connect-js dev (webcrypto-api)$ cd ../connect-example-angularjs/
+connect-example-angularjs dev (henrjk-use-npm)$ npm link anvil-connect-js
 /Users/dev/code/work/connect-js-fork/connect-example-angularjs/node_modules/anvil-connect-js -> /Users/dev/.nvm/versions/node/v0.12.6/lib/node_modules/anvil-connect-js -> /Users/dev/code/work/connect-js-fork/connect-js
 
 connect-example-angularjs dev (use-npm)$ npm install
